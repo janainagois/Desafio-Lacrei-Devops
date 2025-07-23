@@ -1,4 +1,11 @@
-const express = require("express");
+const express = require('express');
 const app = express();
-app.get("/status", (req, res) => res.json({ status: "ok" }));
-app.listen(3000, () => console.log("App running on port 3000"));
+const port = 3000;
+
+app.get('/status', (req, res) => {
+  res.json({ status: 'ok' });
+});
+
+app.listen(port, () => {
+  console.log(`App listening on port ${port}`);
+});
