@@ -25,5 +25,7 @@ jobs:
         TF_VAR_my_ip: ${{ secrets.TF_VAR_MY_IP }}
       run: |
         cd terraform/staging
-        terraform init
-        terraform apply -auto-approve
+        terraform apply -auto-approve 2>&1 | tee tf_apply.log
+        echo "::group::Terraform Apply Logs"
+        cat tf_apply.log
+        echo "::endgroup::"
