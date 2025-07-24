@@ -20,6 +20,8 @@ jobs:
         aws-region: us-east-1
 
     - name: Terraform Apply
+      env:
+        TF_VAR_key_name: ${{ secrets.TF_VAR_key_name }}
       run: |
         cd terraform/staging
         terraform init
