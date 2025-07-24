@@ -25,4 +25,5 @@ jobs:
       run: |
         cd terraform/staging
         terraform init
+        terraform plan -out=tfplan
         terraform apply -auto-approve
