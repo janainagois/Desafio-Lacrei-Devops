@@ -22,8 +22,8 @@ jobs:
     - name: Terraform Apply
       env:
         TF_VAR_key_name: ${{ secrets.TF_VAR_key_name }}
+        TF_VAR_my_ip: ${{ secrets.TF_VAR_MY_IP }}
       run: |
         cd terraform/staging
         terraform init
-        terraform plan -out=tfplan
         terraform apply -auto-approve
