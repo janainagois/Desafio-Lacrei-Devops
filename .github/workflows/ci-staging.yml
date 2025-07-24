@@ -22,7 +22,5 @@ jobs:
     - name: Terraform Apply
       run: |
         cd terraform/staging
-        terraform apply -auto-approve -var="environment=ci-test"
-        #cd terraform/staging
-        #terraform init
-        #terraform apply -auto-approve
+        terraform init
+        terraform apply -auto-approve
