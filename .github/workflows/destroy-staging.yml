@@ -31,9 +31,9 @@ jobs:
         working-directory: terraform/staging
 
       - name: Terraform Plan
-        run: terraform plan -input=false -var-file="terraform.tfvars"
+        run: terraform plan -input=false -var-file=".terraform/terraform.tfvars"
         working-directory: terraform/staging
 
       - name: Terraform Destroy
-        run: terraform destroy -auto-approve -var-file="terraform.tfvars"
+        run: terraform destroy -auto-approve -var-file=".terraform/terraform.tfvars"
         working-directory: terraform/staging
