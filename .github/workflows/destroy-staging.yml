@@ -6,9 +6,8 @@ on:
 jobs:
   destroy:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Install Terraform
@@ -24,7 +23,7 @@ jobs:
           aws-region: us-east-1
 
       - name: Terraform Init
-        run: terraform init
+        run: terraform init -backend-config="../../backend-staging.conf"
         working-directory: terraform/staging
 
       - name: Terraform Validate
@@ -32,9 +31,9 @@ jobs:
         working-directory: terraform/staging
 
       - name: Terraform Plan
-        run: terraform plan -input=false
+        run: terraform plan -input=false -var-file="terraform.tfvars"
         working-directory: terraform/staging
 
       - name: Terraform Destroy
-        run: terraform destroy -auto-approve
+        run: terraform destroy -auto-approve -var-file="terraform.tfvars"
         working-directory: terraform/staging
