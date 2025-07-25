@@ -16,7 +16,6 @@ module "app" {
   my_ip       = var.my_ip                   # Seu IP para acesso SSH
 }
 
-
-
-
- 
+output "staging_ip" {
+  value = module.app.elastic_ip
+} 

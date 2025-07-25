@@ -30,15 +30,12 @@ jobs:
           terraform validate
 
       - name: Terraform Apply
-        env:
-          TF_VAR_key_name: ${{ secrets.TF_VAR_key_name }}
-          TF_VAR_my_ip: ${{ secrets.TF_VAR_MY_IP }}
-        run: |
-          cd terraform/staging
-          terraform apply -auto-approve 2>&1 | tee tf_apply.log
-          echo "::group::Terraform Apply Logs"
-          cat tf_apply.log
-          echo "::endgroup::"
+        id: apply 
+        run: terraform apply --auto-approve
+  
+      - name: Get Instance Public IP
+        id: get_ip 
+        run: echo "instance_ip=$(terraform output -raw public_ip)" >> $GITHUB_OUTPUT
 
       - name: Login to Docker Hub
         uses: docker/login-action@v2
@@ -46,7 +43,24 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build and Push Image
-        run: |
-          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/app-node:staging ./app
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/app-node:staging
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: app/Dockerfile
+          push: true
+          tags: janainagois/lacrei-app:latest
+
+      - name: Deploy to EC2 instance
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ steps.get_ip.outputs.instance_ip }} 
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_PRIVATE_KEY }}
+          script: |
+            sudo apt-get update
+            sudo apt-get install -y docker.io
+            sudo systemctl start docker
+            sudo systemctl enable docker
+            sudo docker pull janagois/desafio-lacrei-devops:latest
+            sudo docker run -d --name lacrei -p 80:80 janagois/desafio-lacrei-devops:latest
