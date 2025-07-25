@@ -14,6 +14,18 @@ jobs:
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.12.2
+    
+      - name: Terraform Init
+        run: terraform init
+        working-directory: ./terraform/staging
+
+      - name: Terraform Validate
+        run: terraform validate
+        working-directory: ./terraform/staging
+
+      - name: Terraform Plan
+        run: terraform plan -input=false
+        working-directory: ./terraform/staging
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
