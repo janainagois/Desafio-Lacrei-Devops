@@ -1,5 +1,13 @@
 variable "key_name" {
   type = string
+  default = "nome-padrao"
+  description = "Nome da chave SSH para acesso à instância EC2"
+}
+
+variable "my_ip" {
+  description = "IP para acesso SSH"
+  type        = string
+  default     = "0.0.0.0/32"
 }
 
 variable "my_ip" {

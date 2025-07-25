@@ -19,6 +19,12 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: us-east-1
 
+    - name: Terraform Init
+      run: |
+        cd terraform/staging
+        terraform init -input=false
+        terraform validate
+
     - name: Terraform Apply
       env:
         TF_VAR_key_name: ${{ secrets.TF_VAR_key_name }}
