@@ -10,10 +10,6 @@ variable "my_ip" {
   default     = "0.0.0.0/32"
 }
 
-variable "my_ip" {
-  type = string
-}
-
 variable "vpc_id" {
   description = "ID da VPC onde a instância será criada"
   type        = string
