@@ -1,37 +1,66 @@
 name: CI Staging
-on: [push]
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:  # Permite acionar manualmente
+
 jobs:
   deploy-staging:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    - name: Install Terraform
-      uses: hashicorp/setup-terraform@v3
-      with:
-        terraform_version: 1.12.2
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.12.2
 
-    - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v4
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: us-east-1
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
 
-    - name: Terraform Init
-      run: |
-        cd terraform/staging
-        terraform init -input=false
-        terraform validate
+      - name: Terraform Init
+        run: |
+          cd terraform/staging
+          terraform init -input=false
+          terraform validate
 
-    - name: Terraform Apply
-      env:
-        TF_VAR_key_name: ${{ secrets.TF_VAR_key_name }}
-        TF_VAR_my_ip: ${{ secrets.TF_VAR_MY_IP }}
-      run: |
-        cd terraform/staging
-        terraform apply -auto-approve 2>&1 | tee tf_apply.log
-        echo "::group::Terraform Apply Logs"
-        cat tf_apply.log
-        echo "::endgroup::"
+      - name: Terraform Apply
+        env:
+          TF_VAR_key_name: ${{ secrets.TF_VAR_key_name }}
+          TF_VAR_my_ip: ${{ secrets.TF_VAR_MY_IP }}
+        run: |
+          cd terraform/staging
+          terraform apply -auto-approve 2>&1 | tee tf_apply.log
+          echo "::group::Terraform Apply Logs"
+          cat tf_apply.log
+          echo "::endgroup::"
+
+  destroy-staging:  # 👈 Novo job para destruição
+    if: ${{ github.event_name == 'workflow_dispatch' }}  # Só roda quando acionado manualmente
+    needs: deploy-staging  # Só executa se o deploy foi bem-sucedido
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.12.2
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Terraform Destroy
+        run: |
+          cd terraform/staging
+          terraform destroy -auto-approve
