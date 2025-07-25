@@ -11,7 +11,7 @@ module "app" {
   vpc_id      = module.vpc.vpc_id           # ID da VPC criada pelo módulo vpc
   subnet_id   = module.vpc.public_subnet_ids[0] # Usa o primeiro subnet público
   app_port    = 3000                        # Porta da sua app Node.js
-  environment = "staging"                   # Define o ambiente
+  environment = "staging"                   # Define o ambiente (staging/production)
   key_name    = var.key_name                # Sua chave SSH
   my_ip       = var.my_ip                   # Seu IP para acesso SSH
 }
