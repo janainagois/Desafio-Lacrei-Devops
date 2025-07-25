@@ -36,3 +36,9 @@ variable "instance_type" {
   type        = string
   default     = "t2.micro"
 }
+
+variable "docker_image" {
+  description = "Nome da imagem Docker no registry"
+  type        = string
+  default     = "janainagois/app-node"
+}

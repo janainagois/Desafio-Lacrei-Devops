@@ -12,13 +12,12 @@ resource "aws_instance" "app" {
 
   user_data = <<-EOF
               #!/bin/bash
-              yum update -y
-              yum install docker -y
-              systemctl start docker
-              systemctl enable docker
-              
-              # Adicione aqui seu comando para rodar o container Node.js
-              docker run -d -p ${var.app_port}:${var.app_port} sua-imagem-node
+              sudo yum update -y
+              sudo amazon-linux-extras install docker -y
+              sudo service docker start
+              sudo usermod -a -G docker ec2-user
+              sudo docker pull ${var.docker_image}:${var.environment}
+              sudo docker run -d -p 3000:3000 ${var.docker_image}:${var.environment}
               EOF
 }
 
