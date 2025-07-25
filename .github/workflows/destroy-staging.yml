@@ -6,12 +6,9 @@ on:
 jobs:
   destroy:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: terraform/staging
 
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Install Terraform
@@ -28,12 +25,16 @@ jobs:
 
       - name: Terraform Init
         run: terraform init
+        working-directory: terraform/staging
 
       - name: Terraform Validate
         run: terraform validate
+        working-directory: terraform/staging
 
       - name: Terraform Plan
         run: terraform plan -input=false
+        working-directory: terraform/staging
 
       - name: Terraform Destroy
         run: terraform destroy -auto-approve
+        working-directory: terraform/staging
