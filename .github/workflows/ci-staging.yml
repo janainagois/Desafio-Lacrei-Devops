@@ -48,10 +48,5 @@ jobs:
 
       - name: Build and Push Image
         run: |
-          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/app-node:staging .
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/app-node:staging ./app
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/app-node:staging
-
-      - name: Deploy to EC2
-        run: |
-          cd terraform/staging
-          terraform apply -auto-approve
