@@ -6,6 +6,10 @@ on:
 jobs:
   destroy:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: terraform/staging
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -14,18 +18,6 @@ jobs:
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.12.2
-    
-      - name: Terraform Init
-        run: terraform init
-        working-directory: ./terraform/staging
-
-      - name: Terraform Validate
-        run: terraform validate
-        working-directory: ./terraform/staging
-
-      - name: Terraform Plan
-        run: terraform plan -input=false
-        working-directory: ./terraform/staging
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -34,7 +26,14 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Validate
+        run: terraform validate
+
+      - name: Terraform Plan
+        run: terraform plan -input=false
+
       - name: Terraform Destroy
-        run: |
-          cd terraform/staging
-          terraform destroy -auto-approve
+        run: terraform destroy -auto-approve
